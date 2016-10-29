@@ -1,5 +1,4 @@
 from PIL import Image, ImageMath, ImageColor
-import webcolors
 import sys
 
 colorNames = ['red', 'green', 'blue']
@@ -27,12 +26,17 @@ def encrypt(original, watermark, output):
     out = Image.merge("RGB", (red2, green2, blue2))
     out.save(output)
 
-def decrypt(water, output): 
+def decrypt(water, output):
+    outputs = []
     for colName, color in zip(colorNames, water.split()):
-        print color
+        #print color
         watermark = ImageMath.eval("(a&0x1)*255", a = color)
         watermark = watermark.convert("L")
-        watermark.save(colName + output)
+        outputs.append(watermark)
+        #watermark.save(colName + output)
+    
+    out = Image.merge("RGB", (outputs[0], outputs[1], outputs[2]))
+    out.save(output)
 
 #main
 argLength = len(sys.argv)
