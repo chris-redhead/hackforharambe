@@ -1,15 +1,17 @@
 <?php
-if ( $_POST['message'] == "" ) { 
-    echo "<form method='POST'>
+if ( $_GET['message'] == "" ) { 
+    echo "<form method='GET'>
     <input type='text' name='message'>
     <input type='submit' name='submit'>
     </form>";
 } else {
 
-
     
-    $im = imagecreatefromjpeg($_POST['message']);
-
+    
+    $im = imagecreatefromjpeg($_GET['message']);
+    if ( !$im ) {
+        exit ("Image failed to load");
+    }
 
     $char["00000001"] = "a";
     $char["00000010"] = "b";
@@ -67,12 +69,13 @@ if ( $_POST['message'] == "" ) {
     
     $char["11111111"] = " ";
     $char["00000000"] = "";
+    $char["10111111"] = "!";
+    $char["01111111"] = "?";
+    $char["01111110"] = ",";
+    $char["01111101"] = ".";
+    
 
-
-
-    $curpos = 0;
-    $count = 3;
-
+    $count = 4;
     while ($count < 2048) {
         $rgb = imagecolorat($im, $count, 0);
         $r[$count] = ($rgb >> 16) & 0xFF;
@@ -82,29 +85,62 @@ if ( $_POST['message'] == "" ) {
         $pix[$count] = $r[$count] + $b[$count] + $g[$count];
         $count = $count + 8;
     }
+    $totalcount = $count;
+    $count = 11;
+    while ($count < 1280) {
+        $rgb = imagecolorat($im, 2047, $count);
+        $r[$count] = ($rgb >> 16) & 0xFF;
+        $g[$count] = ($rgb >> 8) & 0xFF;
+        $b[$count] = $rgb & 0xFF;
 
-    #print_r($data);
+        $pix[$totalcount+$count] = $r[$count] + $b[$count] + $g[$count];
+        $count = $count + 8;
+    }
+    $totalcount = $totalcount+$count;
+    $count = 11;
+    while ($count < 1280) {
+        $rgb = imagecolorat($im, 1, $count);
+        $r[$count] = ($rgb >> 16) & 0xFF;
+        $g[$count] = ($rgb >> 8) & 0xFF;
+        $b[$count] = $rgb & 0xFF;
+
+        $pix[$totalcount+$count] = $r[$count] + $b[$count] + $g[$count];
+        $count = $count + 8;
+    }
+    $totalcount = $totalcount+$count;
+    $count = 11;
+    while ($count < 2048) {
+        $rgb = imagecolorat($im, $count, 1279);
+        $r[$count] = ($rgb >> 16) & 0xFF;
+        $g[$count] = ($rgb >> 8) & 0xFF;
+        $b[$count] = $rgb & 0xFF;
+
+        $pix[$totalcount+$count] = $r[$count] + $b[$count] + $g[$count];
+        
+        $count = $count + 8;
+    }
+    
+    #print_r($newpix);
+
+    #print_r($pix);
 
     $output = "";
 
     foreach ( $pix as $key => $data ) {
-        if ( $data > 300 ) {
+        if ( $data > 700 ) {
             $output .= "1";
         } else {
             $output .= "0";
         }
     }
-
-    $count = 0;
+    
+    #print $output;
 
     $out = explode(".",chunk_split($output,8,"."));
 
     foreach ($out as $test) {
-
         echo $char[$test];
     }
-
-    #print $output;
 }
 ?>
 
