@@ -27,9 +27,6 @@ chrome.contextMenus.create({
 });
 
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
-
-    alert('context click');
-
     switch(info.menuItemId) {
         case "addImageUrl":
             urls.push(info.srcUrl);
