@@ -77,16 +77,17 @@ def retr(filename):
 
 def Main():
     parser = optparse.OptionParser('usage %prog ' + \
-            '-e/-d <target file>')
+            '-e/-d <target file> -m <message>')
     parser.add_option('-e', dest='hide', type='string', \
             help='target picture path to hide text')
     parser.add_option('-d', dest='retr', type='string', \
             help = 'target picture path to retrieve text')
+    parser.add_option('-m', dest='mess', type='string', \
+            help = 'the message to be encrypted')
 
     (options, args) = parser.parse_args()
     if options.hide != None:
-        text = raw_input("Enter a message to hide: ")
-        print hide(options.hide, text)
+        print hide(options.hide, options.mess)
     elif options.retr != None:
         print retr(options.retr)
     else:
