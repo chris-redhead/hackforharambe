@@ -1,0 +1,13 @@
+﻿<h1>Upload your evil image</h1>
+
+<h3 class="text-warning">@ViewBag.message</h3>
+
+    <form asp-action="Upload"
+          asp-controller="UploadImage"
+          method="post"
+          enctype="multipart/form-data">
+        <input type="file" id="evilfile" name="evilfile" />
+
+        <input type="submit" />
+    </form>
+
