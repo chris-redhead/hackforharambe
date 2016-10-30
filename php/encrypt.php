@@ -1,14 +1,173 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');  
-if ( $_POST['message'] == "" ) { 
-    echo "<form method='POST'>
-    <input type='text' name='message'>
-    <input type='submit' name='submit'>
-    </form>";
-} else {
-    header('Content-Type: image/jpeg');
-    $message = $_GET['message'];
+$postdata = print_r($_POST,True);
+file_put_contents("/home/pi/www/upload/something.txt",$postdata);
+    #header('Content-Type: image/jpeg');
+    
+    
+    #echo $_FILES['userfile']['name'][0];
+    
+    
+    #echo $_FILES['userfile']['tmp_name'][0];
+    move_uploaded_file($_FILES['userfile']['tmp_name'][0], "/home/pi/www/upload/evil.gif");
+    
+    move_uploaded_file($_FILES['userfile']['tmp_name'][1], "/home/pi/www/upload/target1.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][2], "/home/pi/www/upload/target2.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][3], "/home/pi/www/upload/target3.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][4], "/home/pi/www/upload/target4.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][5], "/home/pi/www/upload/target5.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][6], "/home/pi/www/upload/target6.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][7], "/home/pi/www/upload/target7.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][8], "/home/pi/www/upload/target8.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][9], "/home/pi/www/upload/target9.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][10], "/home/pi/www/upload/target10.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][11], "/home/pi/www/upload/target11.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][12], "/home/pi/www/upload/target12.jpg");
+    move_uploaded_file($_FILES['userfile']['tmp_name'][13], "/home/pi/www/upload/target13.jpg");
+    
+    
+    
+    $im = imagecreatefromgif("/home/pi/www/upload/evil.gif");
+    
+    $count = 0;
+    $row = 0;
+    
+    while ( $row < 100 ) {
+        while ( $count < 100 ) {
+            $rgb = imagecolorat($im, $count, $row);
+            $r[$count] = ($rgb >> 16) & 0xFF;
+            $g[$count] = ($rgb >> 8) & 0xFF;
+            $b[$count] = $rgb & 0xFF;
+
+            $pix[$count] = $r[$count] + $b[$count] + $g[$count];
+            $data[$row] .= $r[$count] + $b[$count] + $g[$count];
+            
+            $count++;
+        }
+        $count = 0;
+        $row++;
+    }
+    
+    
+    $msg[1] = "0001".$data[0].$data[1].$data[2].$data[3].$data[4].$data[5].$data[6].$data[7];
+    $msg[2] = "0010".$data[8].$data[9].$data[10].$data[11].$data[12].$data[13].$data[14].$data[15];
+    $msg[3] = "0011".$data[16].$data[17].$data[18].$data[19].$data[20].$data[13].$data[14].$data[15];
+    $msg[4] = "0100".$data[24].$data[25].$data[26].$data[27].$data[28].$data[29].$data[30].$data[31];
+    $msg[5] = "0101".$data[32].$data[33].$data[34].$data[35].$data[36].$data[37].$data[38].$data[39];
+    $msg[6] = "0110".$data[40].$data[41].$data[42].$data[43].$data[44].$data[45].$data[46].$data[47];
+    $msg[7] = "0111".$data[48].$data[49].$data[50].$data[51].$data[52].$data[53].$data[54].$data[55];
+    $msg[8] = "1000".$data[56].$data[57].$data[58].$data[59].$data[60].$data[61].$data[62].$data[63];
+    $msg[9] = "1001".$data[64].$data[65].$data[66].$data[67].$data[68].$data[69].$data[70].$data[71];
+    $msg[10] = "1010".$data[72].$data[73].$data[74].$data[75].$data[76].$data[77].$data[78].$data[79];
+    $msg[11] = "1011".$data[80].$data[81].$data[82].$data[83].$data[84].$data[85].$data[86].$data[87];
+    $msg[12] = "1100".$data[88].$data[89].$data[90].$data[91].$data[92].$data[93].$data[94].$data[95];
+    $msg[13] = "1101".$data[96].$data[97].$data[98].$data[99].$data[100];
+       
+    $imgcount = 1;
+    
+    while ( $imgcount <= 13 ) {
+        
+        $im = imagecreatefromjpeg("/home/pi/www/upload/target".$imgcount.".jpg");
+    
+        $white = imagecolorallocate($im, 255, 255, 255);
+        $black = imagecolorallocate($im, 0, 0, 0);
+
+        $direction = 1;#1=top, 2=down, 3=bottom, 4=up
+        $curpos = 0;
+        
+        
+
+        $binary_char = "";
+        $binary_char = str_split($msg[$imgcount]);
+        #print_r($binary_char);
+
+        foreach ( $binary_char as $key => $data) {
+            if ( $curpos == 2048 ) {
+                $direction++;
+                $curpos = 8;
+            }
+
+
+
+            if ( $direction == 1 ) {
+                if ( $data == "1" ) {
+                    imagefilledrectangle($im, $curpos, 0, ($curpos+8), 1, $white);
+                } else {
+                    imagefilledrectangle($im, $curpos, 0, ($curpos+8), 1, $black);
+                }
+                $curpos = $curpos + 8;
+            }
+            if ( $direction == 2 ) {
+                if ( $curpos > 1280 ) {
+                    $direction++;
+                    $curpos = 8;
+                }
+                if ( $data == "1" ) {
+                    imagefilledrectangle($im, 2047, $curpos, 2048, ($curpos+8), $white);
+                } else {
+                    imagefilledrectangle($im, 2047, $curpos, 2048, ($curpos+8), $black);
+                }
+                $curpos = $curpos + 8;
+                #print $curpos."<br>";
+            }
+            if ( $direction == 3 ) {
+                if ( $curpos > 1280 ) {
+                    $direction++;
+                    $curpos = 8;
+                }
+                if ( $data == "1" ) {
+                    imagefilledrectangle($im, 0, $curpos, 1, ($curpos+8), $white);
+                } else {
+                    imagefilledrectangle($im, 0, $curpos, 1, ($curpos+8), $black);
+                }
+                $curpos = $curpos + 8;
+                #print $curpos."<br>";
+            }
+            if ( $direction == 4 ) {
+                if ( $data == "1" ) {
+                    imagefilledrectangle($im, $curpos, 1279, ($curpos+8), 1280, $white);
+                } else {
+                    imagefilledrectangle($im, $curpos, 1279, ($curpos+8), 1280, $black);
+                }
+                $curpos = $curpos + 8;
+                #print $curpos."<br>";
+            }
+        }
+        
+
+        imagejpeg($im,"/home/pi/www/upload/out".$imgcount.".jpg");
+        
+        
+        echo "http://".$_SERVER['SERVER_ADDR']."/upload/out".$imgcount.".jpg\n";
+        
+        
+        
+        
+        $imgcount++;
+    }
+    
+    
+    
+    
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+        
+   
 
     $message_split = str_split($message);
 
@@ -151,10 +310,10 @@ if ( $_POST['message'] == "" ) {
         }
     }
 
-    imagejpeg($im);
-    imagedestroy($im);
+    imagejpeg($im,"output.jpg");
+    #imagedestroy($im);
 }
-
+*/
 ?>
 
 

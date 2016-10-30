@@ -1,146 +1,142 @@
 <?php
-if ( $_GET['message'] == "" ) { 
-    echo "<form method='GET'>
-    <input type='text' name='message'>
-    <input type='submit' name='submit'>
-    </form>";
-} else {
-
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Methods: GET, POST'); 
+    header('Content-Type: image/jpeg');
+    $imgcount = 1;
     
-    
-    $im = imagecreatefromjpeg($_GET['message']);
-    if ( !$im ) {
-        exit ("Image failed to load");
-    }
-
-    $char["00000001"] = "a";
-    $char["00000010"] = "b";
-    $char["00000011"] = "c";
-    $char["00000100"] = "d";
-    $char["00000101"] = "e";
-    $char["00000110"] = "f";
-    $char["00000111"] = "g";
-    $char["00001000"] = "h";
-    $char["00001001"] = "i";
-    $char["00001010"] = "j";
-    $char["00001011"] = "k";
-    $char["00001100"] = "l";
-    $char["00001101"] = "m";
-    $char["00001110"] = "n";
-    $char["00001111"] = "o";
-    $char["00010000"] = "p";
-    $char["00010001"] = "q";
-    $char["00010010"] = "r";
-    $char["00010011"] = "s";
-    $char["00010100"] = "t";
-    $char["00010101"] = "u";
-    $char["00010110"] = "v";
-    $char["00010111"] = "w";
-    $char["00011000"] = "x";
-    $char["00011001"] = "y";
-    $char["00011010"] = "z";
-    
-    $char["00100001"] = "A";
-    $char["00100010"] = "B";
-    $char["00100011"] = "C";
-    $char["00100100"] = "D";
-    $char["00100101"] = "E";
-    $char["00100110"] = "F";
-    $char["00100111"] = "G";
-    $char["00101000"] = "H";
-    $char["00101001"] = "I";
-    $char["00101010"] = "J";
-    $char["00101011"] = "K";
-    $char["00101100"] = "L";
-    $char["00101101"] = "M";
-    $char["00101110"] = "N";
-    $char["00101111"] = "O";
-    $char["00110000"] = "P";
-    $char["00110001"] = "Q";
-    $char["00110010"] = "R";
-    $char["00110011"] = "S";
-    $char["00110100"] = "T";
-    $char["00110101"] = "U";
-    $char["00110110"] = "V";
-    $char["00110111"] = "W";
-    $char["00111000"] = "X";
-    $char["00111001"] = "Y";
-    $char["00111010"] = "Z";
-    
-    $char["11111111"] = " ";
-    $char["00000000"] = "";
-    $char["10111111"] = "!";
-    $char["01111111"] = "?";
-    $char["01111110"] = ",";
-    $char["01111101"] = ".";
+    $file_list = explode(";",$_GET['images']);
     
 
-    $count = 4;
-    while ($count < 2048) {
-        $rgb = imagecolorat($im, $count, 0);
-        $r[$count] = ($rgb >> 16) & 0xFF;
-        $g[$count] = ($rgb >> 8) & 0xFF;
-        $b[$count] = $rgb & 0xFF;
-
-        $pix[$count] = $r[$count] + $b[$count] + $g[$count];
-        $count = $count + 8;
-    }
-    $totalcount = $count;
-    $count = 11;
-    while ($count < 1280) {
-        $rgb = imagecolorat($im, 2047, $count);
-        $r[$count] = ($rgb >> 16) & 0xFF;
-        $g[$count] = ($rgb >> 8) & 0xFF;
-        $b[$count] = $rgb & 0xFF;
-
-        $pix[$totalcount+$count] = $r[$count] + $b[$count] + $g[$count];
-        $count = $count + 8;
-    }
-    $totalcount = $totalcount+$count;
-    $count = 11;
-    while ($count < 1280) {
-        $rgb = imagecolorat($im, 1, $count);
-        $r[$count] = ($rgb >> 16) & 0xFF;
-        $g[$count] = ($rgb >> 8) & 0xFF;
-        $b[$count] = $rgb & 0xFF;
-
-        $pix[$totalcount+$count] = $r[$count] + $b[$count] + $g[$count];
-        $count = $count + 8;
-    }
-    $totalcount = $totalcount+$count;
-    $count = 11;
-    while ($count < 2048) {
-        $rgb = imagecolorat($im, $count, 1279);
-        $r[$count] = ($rgb >> 16) & 0xFF;
-        $g[$count] = ($rgb >> 8) & 0xFF;
-        $b[$count] = $rgb & 0xFF;
-
-        $pix[$totalcount+$count] = $r[$count] + $b[$count] + $g[$count];
+    $binnum["0001"] = 1;
+    $binnum["0010"] = 2;
+    $binnum["0011"] = 3;
+    $binnum["0100"] = 4;
+    $binnum["0101"] = 5;
+    $binnum["0110"] = 6;
+    $binnum["0111"] = 7;
+    $binnum["1000"] = 8;
+    $binnum["1001"] = 9;
+    $binnum["1010"] = 10;
+    $binnum["1011"] = 11;
+    $binnum["1100"] = 12;
+    $binnum["1101"] = 13;
+    
+    
+    foreach( $file_list as $key => $data ) {
         
-        $count = $count + 8;
-    }
-    
-    #print_r($newpix);
+        $im = imagecreatefromjpeg($data);
+        
+        $count = 4;
+        while ($count < 2048) {
+            $rgb = imagecolorat($im, $count, 0);
+            $r[$count] = ($rgb >> 16) & 0xFF;
+            $g[$count] = ($rgb >> 8) & 0xFF;
+            $b[$count] = $rgb & 0xFF;
 
-    #print_r($pix);
-
-    $output = "";
-
-    foreach ( $pix as $key => $data ) {
-        if ( $data > 700 ) {
-            $output .= "1";
-        } else {
-            $output .= "0";
+            $pix[$count] = $r[$count] + $b[$count] + $g[$count];
+            $count = $count + 8;
         }
+        $totalcount = $count;
+        $count = 11;
+        while ($count < 1280) {
+            $rgb = imagecolorat($im, 2047, $count);
+            $r[$count] = ($rgb >> 16) & 0xFF;
+            $g[$count] = ($rgb >> 8) & 0xFF;
+            $b[$count] = $rgb & 0xFF;
+
+            $pix[$totalcount+$count] = $r[$count] + $b[$count] + $g[$count];
+            $count = $count + 8;
+        }
+        $totalcount = $totalcount+$count;
+        $count = 11;
+        while ($count < 1280) {
+            $rgb = imagecolorat($im, 1, $count);
+            $r[$count] = ($rgb >> 16) & 0xFF;
+            $g[$count] = ($rgb >> 8) & 0xFF;
+            $b[$count] = $rgb & 0xFF;
+
+            $pix[$totalcount+$count] = $r[$count] + $b[$count] + $g[$count];
+            $count = $count + 8;
+        }
+        $totalcount = $totalcount+$count;
+        $count = 11;
+        while ($count < 2048) {
+            $rgb = imagecolorat($im, $count, 1279);
+            $r[$count] = ($rgb >> 16) & 0xFF;
+            $g[$count] = ($rgb >> 8) & 0xFF;
+            $b[$count] = $rgb & 0xFF;
+
+            $pix[$totalcount+$count] = $r[$count] + $b[$count] + $g[$count];
+
+            $count = $count + 8;
+        }
+
+        $output = "";
+
+        foreach ( $pix as $key => $data ) {
+            if ( $data > 700 ) {
+                $output .= "1";
+            } else {
+                $output .= "0";
+            }
+        }
+
+        $id = substr($output,0,4);
+        $output = substr($output,4);
+        
+        
+        $outdata = ( str_split($output,100));
+        
+        $outputlist[$binnum[$id]] .= $outdata[0].$outdata[1].$outdata[2].$outdata[3].$outdata[4].$outdata[5].$outdata[6].$outdata[7];
+        
+
+        #$out = explode(".",chunk_split($output,8,"."));
+
+        $imgcount++;
+    }
+    #echo $outputdata;
+    
+    $imgcount = 1;
+    while ( $imgcount <= 13 ) {
+        if ($outputlist[$imgcount] == null) {
+            $outputdata .= str_repeat("0",800);
+            
+        } else {
+            $outputdata .= $outputlist[$imgcount];
+            
+        }
+        $imgcount++;
     }
     
-    #print $output;
+    $im = imagecreatetruecolor(100, 100);
 
-    $out = explode(".",chunk_split($output,8,"."));
-
-    foreach ($out as $test) {
-        echo $char[$test];
+    $white = imagecolorallocate($im, 255, 255, 255);
+    $grey = imagecolorallocate($im, 128, 128, 128);
+    $black = imagecolorallocate($im, 0, 0, 0);
+    
+    $data = str_split($outputdata);
+    
+    $count = 0;
+    $row = 0;
+    foreach ( $data as $pixel) {
+        if ( $count == 100 ) {
+            $row++;
+            $count = 0;
+        }
+        #echo $pixel;
+        if ( $pixel == 1 ) {
+            imagefilledrectangle($im, $count, $row, $count+1, $row+1, $black);
+        }
+        if ( $pixel == 0 ) {
+            imagefilledrectangle($im, $count, $row, $count+1, $row+1, $white);
+        }
+        $count++;
     }
-}
+    
+    imagejpeg($im);
+    imagedestroy($im);
+    
+
+    
 ?>
 
