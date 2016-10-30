@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Evil Image Encoder</title>
+        <title>Very Secret Image Uploader</title>
         <!--<script src="bower_components/angular/angular.min.js">-->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
 
@@ -22,7 +22,7 @@
 
     <body>
         <form id="imageForm">
-            <h3>Evil image</h3>
+            <h3>Very Secret Image Uploader</h3>
             <input type="file" id="evil" name="evil">
 
             <!--<h3>Carrier images</h3>
@@ -37,25 +37,25 @@
             $('#submitButton').on('click', () => {
                 var evilFiles = $('#evil')[0].files;
                 if(evilFiles.length == 0) throw error('Evil file must be supplied!');
-/*
-                var carrierFiles = $('#carriers')[0].files;
-                if(carrierFiles.length != 13) throw error('Exactly 13 carriers must be supplied!');
 
+                var carrierFiles = $('#carriers')[0].files;
+            /*    if(carrierFiles.length != 13) throw error('Exactly 13 carriers must be supplied!');
+*/
                 var allFiles = [];
 
-                for(var i = 0; i < evilFiles.length; i++) 
-                    allFiles.push(evilFiles[i]);
-
+/*               for(var i = 0; i < evilFiles.length; i++) 
+                    allFiles.push(evilFiles[i]); */
+                    
                 for(var i = 0; i < carrierFiles.length; i++) 
                     allFiles.push(carrierFiles[i]);
-*/
+
                 //now for each, add to formdata
 
                 var data = new FormData();
                 data.append('evil', evilFiles[0]);
                 
-                //for(var i = 0; i < carrierFiles.length; i++) 
-                //    data.append('carrier', carrierFiles[i]);
+                for(var i = 0; i < carrierFiles.length; i++) 
+                    data.append('carrier', carrierFiles[i]);
 
                 var request = new XMLHttpRequest();
                 request.open("POST", "http://localhost:60888/upload");

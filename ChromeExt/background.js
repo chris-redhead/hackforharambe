@@ -12,6 +12,11 @@ chrome.runtime.onMessage.addListener(
             respond(urls);
             return true;
 
+        case "clearUrls":
+            urls = [];
+            respond({});
+            return true;
+
         // case "postUrl":
         //     urls.push(req.data);
         //     respond(true);            
