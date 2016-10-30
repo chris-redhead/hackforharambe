@@ -18,7 +18,7 @@ if ( $_POST['submit'] == "" ) {
     echo "Processing...<br><br>";
     flush();
     sleep(1);
-    echo "Completed ! <br>";
+    echo $process + "<br>";
     echo "<img src='../upload/out.png'>";
 }
 ?>
