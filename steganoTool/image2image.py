@@ -3,41 +3,41 @@ from PIL import Image, ImageMath, ImageColor
 import sys, optparse
 
 def encrypt(original, watermark, output):
-    switcher = False
-    if original.endswith('.jpg'):
-        switcher = True
+    if original.endswith('.png') and watermark.endswith('.png'):
+        watermark = Image.open(watermark)
+        original = Image.open(original)
+        watermark = watermark.resize(original.size)
 
-    watermark = Image.open(watermark)
-    original = Image.open(original)
-    watermark = watermark.resize(original.size)
-
-    if switcher:
-        red, green, blue = original.split()
-        wred, wgreen, wblue = watermark.split()
-    else:
         red, green, blue, alpha = original.split()
         wred, wgreen, wblue, walpha = watermark.split()
 
-    red2 = ImageMath.eval("convert(a&0xFE|b&0x1, 'L')", a = red, b = wred)
-    green2 = ImageMath.eval("convert(a&0xFE|b&0x1, 'L')", a = green, b = wgreen)
-    blue2 = ImageMath.eval("convert(a&0xFE|b&0x1, 'L')", a = blue, b = wblue)
+        red2 = ImageMath.eval("convert(a&0xFE|b&0x1, 'L')", a = red, b = wred)
+        green2 = ImageMath.eval("convert(a&0xFE|b&0x1, 'L')", a = green, b = wgreen)
+        blue2 = ImageMath.eval("convert(a&0xFE|b&0x1, 'L')", a = blue, b = wblue)
 
-    out = Image.merge("RGB", (red2, green2, blue2))
-    out.save(output)
+        out = Image.merge("RGB", (red2, green2, blue2))
+        out.save(output)
+        print "Completed"
+    else:
+        print "Incorrect image format"
 
 def decrypt(water, output):
-    colorNames = ['red', 'green', 'blue']
-    water = Image.open(water)
-    outputs = []
-    for colName, color in zip(colorNames, water.split()):
-        #print color
-        watermark = ImageMath.eval("(a&0x1)*255", a = color)
-        watermark = watermark.convert("L")
-        outputs.append(watermark)
-        #watermark.save(colName + output)
+    if water.endswith('.png'):
+        colorNames = ['red', 'green', 'blue']
+        water = Image.open(water)
+        outputs = []
+        for colName, color in zip(colorNames, water.split()):
+            #print color
+            watermark = ImageMath.eval("(a&0x1)*255", a = color)
+            watermark = watermark.convert("L")
+            outputs.append(watermark)
+            #watermark.save(colName + output)
     
-    out = Image.merge("RGB", (outputs[0], outputs[1], outputs[2]))
-    out.save(output)
+        out = Image.merge("RGB", (outputs[0], outputs[1], outputs[2]))
+        out.save(output)
+        print "Completed"
+    else:
+        print "Incorrect image format"
 
 def Main():
     parser = optparse.OptionParser('usage %prog : \n' + \
