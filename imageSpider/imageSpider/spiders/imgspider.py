@@ -4,7 +4,11 @@ import scrapy
 
 class ImageSpider(scrapy.Spider):
     name = 'pyImageSearch'
-    start_urls =['http://imgur.com/search/score/all?q_any=cat&q_type=png&q_size_px=med&q_size_mpx=med&q_all=']
+
+    def __init__(self, title='', *args, **kwargs):
+        super(ImageSpider, self).__init__(*args, **kwargs)
+        self.start_urls =['http://imgur.com/search/score/all?q_any=%s&q_type=png&q_size_px=med&q_size_mpx=med&q_all=' % title]
+
 
     def parse(self, response):
         images = Selector(response).xpath('//div[@class="post"]/a')
