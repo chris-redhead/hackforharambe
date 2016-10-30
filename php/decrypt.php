@@ -2,6 +2,11 @@
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET, POST'); 
     header('Content-Type: image/jpeg');
+
+    if ( $_GET['all'] == "1" ) {
+        $_GET['images'] = "http://192.168.43.196/upload/out1.jpg;http://192.168.43.196/upload/out2.jpg;http://192.168.43.196/upload/out3.jpg;http://192.168.43.196/upload/out4.jpg;http://192.168.43.196/upload/out5.jpg;http://192.168.43.196/upload/out6.jpg;http://192.168.43.196/upload/out9.jpg;http://192.168.43.196/upload/out7.jpg;http://192.168.43.196/upload/out8.jpg;http://192.168.43.196/upload/out10.jpg;http://192.168.43.196/upload/out11.jpg;http://192.168.43.196/upload/out12.jpg";
+    }
+
     $imgcount = 1;
     
     $file_list = explode(";",$_GET['images']);
@@ -74,7 +79,7 @@
         $output = "";
 
         foreach ( $pix as $key => $data ) {
-            if ( $data > 700 ) {
+            if ( $data > 600 ) {
                 $output .= "1";
             } else {
                 $output .= "0";
@@ -124,10 +129,10 @@
             $count = 0;
         }
         #echo $pixel;
-        if ( $pixel == 1 ) {
+        if ( $pixel == 0 ) {
             imagefilledrectangle($im, $count, $row, $count+1, $row+1, $black);
         }
-        if ( $pixel == 0 ) {
+        if ( $pixel == 1 ) {
             imagefilledrectangle($im, $count, $row, $count+1, $row+1, $white);
         }
         $count++;

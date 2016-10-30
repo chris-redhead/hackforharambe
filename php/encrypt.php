@@ -28,8 +28,9 @@ file_put_contents("/home/pi/www/upload/something.txt",$postdata);
     
     
     
-    $im = imagecreatefromgif("/home/pi/www/upload/evil.gif");
-    
+    $im = imagecreatefrompng("/home/pi/www/upload/evil.gif");
+  
+
     $count = 0;
     $row = 0;
     
@@ -42,7 +43,7 @@ file_put_contents("/home/pi/www/upload/something.txt",$postdata);
 
             $pix[$count] = $r[$count] + $b[$count] + $g[$count];
             $data[$row] .= $r[$count] + $b[$count] + $g[$count];
-            
+            #print $data[$row]."<br>";
             $count++;
         }
         $count = 0;
