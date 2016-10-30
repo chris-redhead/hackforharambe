@@ -1,5 +1,6 @@
 <?php
-
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST');  
 if ( $_POST['message'] == "" ) { 
     echo "<form method='POST'>
     <input type='text' name='message'>
@@ -7,7 +8,7 @@ if ( $_POST['message'] == "" ) {
     </form>";
 } else {
     header('Content-Type: image/jpeg');
-    $message = $_POST['message'];
+    $message = $_GET['message'];
 
     $message_split = str_split($message);
 
@@ -69,23 +70,23 @@ if ( $_POST['message'] == "" ) {
     
     $char[""] = "00000000";
     $char[" "] = "11111111";
+    $char["!"] = "10111111";
+    $char["?"] = "01111111";
+    $char[","] = "01111110";
+    $char["."] = "01111101";
+    
 
 
     $binary = "";
     foreach ($message_split as $key => $data ) {
-        #echo $data;
-        $binary .= $char[$data].",";
-        #echo $binary;
+        
+        $binary .= $char[$data]."-";
+        
     }
 
-
-
-
-
-
-
-
-    $im = imagecreatetruecolor(2048, 1280);
+    $im = imagecreatefromjpeg("butterfly.jpg");
+    
+    #$im = imagecreatetruecolor(2048, 1280);
 
 
     $white = imagecolorallocate($im, 255, 255, 255);
@@ -93,26 +94,62 @@ if ( $_POST['message'] == "" ) {
     $black = imagecolorallocate($im, 0, 0, 0);
 
 
-    $output_text = explode(",",$binary);
+    $output_text = explode("-",$binary);
 
-
+    $direction = 1;#1=top, 2=down, 3=bottom, 4=up
     $curpos = 0;
+    
     foreach ( $output_text as $key => $data ) {
 
         $binary_char = "";
         $binary_char = str_split($data);
+        #print_r($binary_char);
 
         foreach ( $binary_char as $key => $data) {
-            #print $data."-";
-            if ( $data == "1" ) {
-                imagefilledrectangle($im, $curpos, 0, ($curpos+8), 1, $grey);
-            }    
-            $curpos = $curpos + 8;
+            if ( $curpos == 2048 ) {
+                $direction++;
+                $curpos = 8;
+            }
+            
+            
+            
+            if ( $direction == 1 ) {
+                if ( $data == "1" ) {
+                    imagefilledrectangle($im, $curpos, 0, ($curpos+8), 1, $white);
+                }
+                $curpos = $curpos + 8;
+            }
+            if ( $direction == 2 ) {
+                if ( $curpos > 1280 ) {
+                    $direction++;
+                    $curpos = 8;
+                }
+                if ( $data == "1" ) {
+                    imagefilledrectangle($im, 2047, $curpos, 2048, ($curpos+8), $white);
+                }
+                $curpos = $curpos + 8;
+                #print $curpos."<br>";
+            }
+            if ( $direction == 3 ) {
+                if ( $curpos > 1280 ) {
+                    $direction++;
+                    $curpos = 8;
+                }
+                if ( $data == "1" ) {
+                    imagefilledrectangle($im, 0, $curpos, 1, ($curpos+8), $white);
+                }
+                $curpos = $curpos + 8;
+                #print $curpos."<br>";
+            }
+            if ( $direction == 4 ) {
+                if ( $data == "1" ) {
+                    imagefilledrectangle($im, $curpos, 1279, ($curpos+8), 1280, $white);
+                }
+                $curpos = $curpos + 8;
+                #print $curpos."<br>";
+            }
         }
     }
-
-
-
 
     imagejpeg($im);
     imagedestroy($im);

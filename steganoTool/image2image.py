@@ -1,7 +1,6 @@
+#!/usr/bin/env python
 from PIL import Image, ImageMath, ImageColor
-import sys
-
-colorNames = ['red', 'green', 'blue']
+import sys, optparse
 
 def encrypt(original, watermark, output):
     switcher = False
@@ -27,6 +26,8 @@ def encrypt(original, watermark, output):
     out.save(output)
 
 def decrypt(water, output):
+    colorNames = ['red', 'green', 'blue']
+    water = Image.open(water)
     outputs = []
     for colName, color in zip(colorNames, water.split()):
         #print color
@@ -38,19 +39,27 @@ def decrypt(water, output):
     out = Image.merge("RGB", (outputs[0], outputs[1], outputs[2]))
     out.save(output)
 
-#main
-argLength = len(sys.argv)
-if argLength == 4:
-    watermark = str(sys.argv[1])
-    original = str(sys.argv[2])
-    output = str(sys.argv[3])
-    encrypt(original, watermark, output)
-else :
-    if argLength == 3:
-        final = Image.open(str(sys.argv[1]))
-        output = str(sys.argv[2])
-        decrypt(final, output)
+def Main():
+    parser = optparse.OptionParser('usage %prog : \n' + \
+            'To encrypt : -e <evil file> -t <target file> -o <output file>\n' + \
+            'To decrypt : -d <target file> -o <output file>')
+    parser.add_option('-e', dest='evil', type='string', \
+            help='the evil file to be hidden')
+    parser.add_option('-t', dest='target', type='string', \
+            help='the destination of the hidden image')
+    parser.add_option('-o', dest='out', type='string', \
+            help='the output file')
+    parser.add_option('-d', dest='final', type='string', \
+            help='the file to decrypt')
+
+    (options, args) = parser.parse_args()
+    if options.evil != None:
+        encrypt(options.target, options.evil, options.out)
+    elif options.final != None:
+        decrypt(options.final, options.out)
     else:
-        print "Usage steganoTool :"
-        print "To encrypt : steganoTool [evilFileName] [catPicture] [outputFile]"
-        print "To decrypt : steganoTool [suspectFile] [outputFile]"
+        print parser.usage
+        exit(0)
+
+if __name__ == '__main__':
+    Main()
